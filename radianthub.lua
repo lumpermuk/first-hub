@@ -1,8 +1,6 @@
-
---Made by : https://v3rmillion.net/member.php?action=profile&uid=244024
 -- init
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/zxciaz/VenyxUI/main/Reuploaded"))() --someone reuploaded it so I put it in place of the original back up so guy can get free credit.
-local main = library.new("richard sucks massive cock and eats dick", 5013109572)
+local main = library.new("richard sucks massive cock and eats dick v1.0", 5013109572)
 
 -- themes
 local themes = {
@@ -34,12 +32,15 @@ local teleport_table = {
 }
 local rs = game:GetService('RunService')
 local lp = game:GetService('Players').LocalPlayer
+local teleportSpeed = 400
+local Noclipping = nil
+getgenv().Clip = false
 
 function bp_tp(v)
    if lp.Character and lp.Character:FindFirstChild('HumanoidRootPart') then
        local playerPos = lp.Character.HumanoidRootPart.Position
        local dis = (playerPos - v).Magnitude
-       local time = dis/150
+       local time = dis/teleportSpeed
        local ts = game:GetService('TweenService')
        local ti = TweenInfo.new(
            time,
@@ -52,10 +53,27 @@ function bp_tp(v)
            {CFrame=cf}
        )
        
-       print("Player Position is ",playerPos)
-     print("Distance between the player position and the location is ",dis)
-     print("The time required in order to reach 50 speed is ", time)
+      --print("Player Position is ",playerPos)
+      --print("Distance between the player position and the location is ",dis)
+      --print("The time required in order to reach 50 speed is ", time)
        a:Play()
+       Clip = true
+       Noclipping = rs.Stepped:Connect(NoclipLoop)
+       a.Completed:Connect(function()
+            Noclipping:Disconnect()
+            print("Tween Completed!")
+            Clip = false
+       end)
+   end
+end
+
+function NoclipLoop()
+   if Clip == true then
+      for _, child in pairs(lp.Character:GetDescendants()) do
+         if child:IsA("BasePart") and child.CanCollide == true then
+            child.CanCollide = false
+         end
+      end
    end
 end
 
@@ -63,11 +81,6 @@ end
 local page = main:addPage("Teleports", 5012544693)
 local section1 = page:addSection("Locations")
 --local section2 = page:addSection("Section 2")
-
---[[section1:addToggle("Toggle", nil, function(value)
-print("Toggled", value)
-end)
-]]
 
 section1:addButton("Kiribating Village", function()
    bp_tp(teleport_table["Kiribating Village"])
@@ -134,8 +147,7 @@ main:Notify("Title", value)
 end
 end)
 
-
-section2:addKeybind("Toggle Keybind", Enum.KeyCode.One, function()
+section2:addKeybind("Toggle Keybind", Enum.KeyCode.RightControl, function()
 print("Activated Keybind")
 main:toggle()
 end, function()
@@ -199,9 +211,13 @@ modifers:addButton("Infinite Breathing", function()
     end)
 end)
 
-pop:addButton("Destroy GUI", function()
-   main:Destroy()
+pop:addSlider("Teleport Speed", 400, 50, 600, function(tpSpeed)
+   teleportSpeed = tpSpeed
 end)
 
+pop:addKeybind("GUI Toggle", Enum.KeyCode.RightControl, function()
+   main:toggle()
+   end, function()
+end)
 
 main:SelectPage(main.pages[1], true) -- no default for more freedomaw
